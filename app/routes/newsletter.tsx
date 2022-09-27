@@ -36,6 +36,7 @@ export default function Newsletter() {
     : "idle";
 
     let inputRef = useRef<HTMLInputElement>(null);
+    let successRef = useRef<HTMLHeadingElement>(null);
     let mounted = useRef<boolean>(false);
 
     useEffect(() => {
@@ -45,6 +46,10 @@ export default function Newsletter() {
 
         if(state === "idle" && mounted.current){
             inputRef.current?.select();
+        }
+
+        if(state === "success" ){
+            successRef.current?.focus();
         }
 
         mounted.current = true;
@@ -77,7 +82,7 @@ export default function Newsletter() {
         </p>
             </Form>
             <div aria-hidden={state !== "success"}>
-                <h2>You're subscribed!</h2>
+                <h2 ref={successRef} tabIndex={-1}>You're subscribed!</h2>
                 <p>Check your emalk to confirm your subscription</p>
                 <Link to=".">Start over</Link>
             </div>
