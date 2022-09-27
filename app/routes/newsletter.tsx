@@ -60,7 +60,9 @@ export default function Newsletter() {
                 <h2>Subscribe</h2>
                 <p>Don't miss any of the action</p>
                 <fieldset disabled={state === "submitting"}>
-                    <input 
+                    <input
+                    aria-label="Email address"
+                    aria-describedby="error-message"
                     type="email" name="email" 
                     placeholder="codescaptain@gmail.com"
                     ref={inputRef}
