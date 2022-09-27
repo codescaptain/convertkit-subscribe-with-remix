@@ -1,7 +1,9 @@
 import { ActionFunction } from "@remix-run/node";
-import { Form, Link, useActionData } from "@remix-run/react";
+import { Form, Link, useActionData, useTransition } from "@remix-run/react";
+import { useEffect, useRef } from "react";
 
 export let action: ActionFunction = async ({request}) => {
+    await new Promise((res) => setTimeout(res, 1000));
     let formmData = await request.formData();
     let email = formmData.get("email")
     
@@ -24,11 +26,32 @@ export let action: ActionFunction = async ({request}) => {
 
 export default function Newsletter() {
     let actionData = useActionData();
-    let state: "idle" | "success" | "error" = actionData?.subscription 
+    let transition = useTransition();
+    let state: "idle" | "success" | "error" | "submitting" = transition.submission
+    ? "submitting"
+    :actionData?.subscription 
     ? "success"
     : actionData?.error
     ? "error"
     : "idle";
+
+    let inputRef = useRef<HTMLInputElement>(null);
+    let mounted = useRef<boolean>(false);
+
+    useEffect(() => {
+        if(state === "error"){
+            inputRef.current?.focus();
+        }
+
+        if(state === "idle" && mounted.current){
+            inputRef.current?.select();
+        }
+
+        mounted.current = true;
+
+
+    }, [state])
+    
 
     return (
         <main>
@@ -36,16 +59,21 @@ export default function Newsletter() {
             <Form method="post" aria-hidden={state === "success"}>
                 <h2>Subscribe</h2>
                 <p>Don't miss any of the action</p>
-                <fieldset>
-                    <input type="email" name="email" placeholder="codescaptain@gmail.com" />
-                    <button type="submit"> Subscribe</button>
+                <fieldset disabled={state === "submitting"}>
+                    <input 
+                    type="email" name="email" 
+                    placeholder="codescaptain@gmail.com"
+                    ref={inputRef}
+                     />
+                    <button type="submit">
+                        {state === "submitting" ? "Subscribing..." : "Subscribe"}
+                    </button>
                 </fieldset>
+
+                <p id="error-message">
+          {state === "error" ? actionData.message : <>&nbsp;</>}
+        </p>
             </Form>
-            <p>
-                {actionData?.error ? (
-                    actionData.message
-                ): <>&nbsp;</>}
-            </p>
             <div aria-hidden={state !== "success"}>
                 <h2>You're subscribed!</h2>
                 <p>Check your emalk to confirm your subscription</p>
