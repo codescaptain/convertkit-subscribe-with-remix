@@ -83,7 +83,7 @@ export default function Newsletter() {
             </Form>
             <div aria-hidden={state !== "success"}>
                 <h2 ref={successRef} tabIndex={-1}>You're subscribed!</h2>
-                <p>Check your emalk to confirm your subscription</p>
+                <p>Check your email to confirm your subscription</p>
                 <Link to=".">Start over</Link>
             </div>
         </main>
